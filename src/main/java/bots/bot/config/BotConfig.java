@@ -1,12 +1,11 @@
-package bots.bot;
+package bots.bot.config;
 
 import bots.bot.coin.ProfileRepository;
-import bots.bot.coin.VoiceListener;
 import bots.bot.commands.SlashCommandListener;
-import bots.bot.config.Properties;
 import bots.bot.music.JDACommands;
 import bots.bot.music.commands.*;
 import bots.bot.playlist.PlaylistRepository;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -14,33 +13,58 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
 
-@Component
-public class UtilJdaConfiguration {
+@Slf4j
+@Configuration
+public class BotConfig {
 
-    public static JDA jda;
-    public final static GatewayIntent[] INTENTS = {GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.MESSAGE_CONTENT};
+    @Value("${bot.token}")
+    private String botToken;
 
-    public static void initialization(String prefix, Properties properties, ProfileRepository profileRepository, PlaylistRepository playlistRepository, VoiceListener voiceListener) throws InterruptedException {
+    private static final GatewayIntent[] INTENTS = {
+            GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MESSAGES,
+            GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_VOICE_STATES,
+            GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.MESSAGE_CONTENT
+    };
 
+    @Bean
+    public JDA jda(SlashCommandListener slashCommandListener, JDACommands jdaCommands) throws InterruptedException {
+        JDA jda = JDABuilder.createDefault(botToken)
+                .setActivity(Activity.watching("checks"))
+                .addEventListeners(slashCommandListener, jdaCommands)
+                .enableIntents(Arrays.asList(INTENTS))
+                .build();
 
-        JDACommands jdaCommands = new JDACommands(prefix);
+        jda.awaitReady();
+        return jda;
+    }
+
+    @Bean
+    public JDACommands jdaCommands() {
+        log.info("Prefix commands registering");
+        JDACommands jdaCommands = new JDACommands("!");
         jdaCommands.registerCommand(new Play());
         jdaCommands.registerCommand(new Stop());
         jdaCommands.registerCommand(new Skip());
         jdaCommands.registerCommand(new Pause());
         jdaCommands.registerCommand(new CurrentTrack());
         jdaCommands.registerCommand(new YouTube());
-        jda = JDABuilder.createDefault(properties.getToken())
-                .setActivity(Activity.watching("checks"))
-                .addEventListeners(jdaCommands)
-                .addEventListeners(voiceListener)
-                .addEventListeners(new SlashCommandListener(profileRepository, playlistRepository))
-                .enableIntents(Arrays.asList(INTENTS))
-                .build();
+        log.info("Prefix commands successfully registered");
+        return jdaCommands;
+    }
+
+    @Bean
+    public SlashCommandListener slashCommandListener(ProfileRepository profileRepository, PlaylistRepository playlistRepository) {
+        return new SlashCommandListener(profileRepository, playlistRepository);
+    }
+
+    @Bean
+    public JDA registerCommands(JDA jda) {
+        log.info("Slash commands registering...");
         jda.updateCommands().addCommands(
                 Commands.slash("play", "Play the chosen playlist by its name.")
                         .addOption(OptionType.STRING, "title", "Title of the playlist", true),
@@ -64,7 +88,8 @@ public class UtilJdaConfiguration {
                         .addOption(OptionType.STRING, "link", "Link to your Spotify playlist to be converted")
                         .addOption(OptionType.STRING, "title", "Name of the playlist to be created or to be expanded")
                         .addOption(OptionType.INTEGER, "number", "Amount of composition to be added")
-        ).queue();
-        jda.awaitReady();
+        ).queue(success -> log.info("Successfully added slash commands!"),
+                    failure -> log.error("Failed to add slash commands!", failure));
+        return jda;
     }
 }

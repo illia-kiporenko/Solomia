@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 
-@Component
 @AllArgsConstructor
 public class SlashCommandListener extends ListenerAdapter {
     private final ProfileRepository profileRepository;

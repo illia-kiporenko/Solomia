@@ -27,9 +27,9 @@ public class SpotifyPlaylistParserTest {
     @Test
     public void testParsePlaylistId() {
         // Тестування з валідним посиланням
-        String validLink = "https://open.spotify.com/playlist/3VKTzsJDypSIavEQS2kOw3?si=1e20d6f8bd304732&pt_success=1&nd=1&dlsi=60e334b08da84ff3";
+        String validLink = "https://open.spotify.com/playlist/5dSfsTZyyq71Izgn3V390K?si=e5bca6c591b84f74";
         String result = SpotifyPlaylistParser.parsePlaylistId(validLink);
-        assertEquals("3VKTzsJDypSIavEQS2kOw3", result);
+        assertEquals("5dSfsTZyyq71Izgn3V390K", result);
 
         // Тестування з невалідним посиланням
         String invalidLink = "https://open.spotify.com/playlist/";
@@ -40,8 +40,8 @@ public class SpotifyPlaylistParserTest {
     @Test
     public void testParseSoloTrack() throws IOException {
         // Тестування з валідним писиланням
-        String validLink = "https://open.spotify.com/track/4SupI9OXg3hwrymR85hkhL";
+        String validLink = "https://open.spotify.com/track/0snQkGI5qnAmohLE7jTsTn?si=3dc91954a9944eac";
         String result = SpotifyPlaylistParser.parseSoloTrack(validLink);
-        assertEquals("Signal TK from Ling tosite sigure", result);
+        assertEquals("Toxicity System Of A Down", result);
     }
 }

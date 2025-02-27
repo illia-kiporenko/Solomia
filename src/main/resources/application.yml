@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/profiles
     username: postgres
-    password: 123
+    password: 1234
   jpa:
     hibernate:
       ddl-auto: update
@@ -16,25 +16,8 @@ server:
     include-message: always
   port: 8080
 bot:
-  token:  "here is your own token"
+  token: <provide your discord bot token here>
 lavalink:
   server:
     sources:
       youtube: false
-
-plugins:
-  youtube:
-    enabled: true # Whether this source can be used.
-    oauth:
-      enabled: true
-    allowSearch: true # Whether "ytsearch:" and "ytmsearch:" can be used.
-    allowDirectVideoIds: true # Whether just video IDs can match. If false, only complete URLs will be loaded.
-    allowDirectPlaylistIds: true # Whether just playlist IDs can match. If false, only complete URLs will be loaded.
-    # The clients to use for track loading. See below for a list of valid clients.
-    # Clients are queried in the order they are given (so the first client is queried first and so on...)
-    clients:
-      - MUSIC
-      - ANDROID_VR
-      - WEB
-      - WEBEMBEDDED
-

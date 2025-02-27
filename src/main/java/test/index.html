@@ -60,7 +60,7 @@
 
     async function fetchData() {
         try {
-            const response = await fetch('http://ec2-3-76-39-198.eu-central-1.compute.amazonaws.com:8080/api/profiles');
+            const response = await fetch('http://ec2-3-66-198-21.eu-central-1.compute.amazonaws.com:8080/api/profiles ');
             const data = await response.json();
             populateTable(data);
         } catch (error) {

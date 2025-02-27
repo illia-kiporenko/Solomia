@@ -67,9 +67,9 @@
 			<version>2.2.2</version>
 		</dependency>-->
 		<dependency>
-			<groupId>com.github.walkyst</groupId>
-			<artifactId>lavaplayer-fork</artifactId>
-			<version>1.4.3</version>
+			<groupId>dev.arbjerg</groupId>
+			<artifactId>lavaplayer</artifactId>
+			<version>2.2.3</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/net.sourceforge.jaadec/jaad -->
 		<dependency>
@@ -108,7 +108,7 @@
 		<dependency>
 			<groupId>dev.lavalink.youtube</groupId>
 			<artifactId>common</artifactId>
-			<version>1.11.1</version>
+			<version>1.11.4</version>
 		</dependency>
 	</dependencies>
 	<repositories>
