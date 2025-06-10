@@ -1,6 +1,5 @@
-package test;
+package bots.bot.music.SpotifyParser;
 
-import bots.bot.music.SpotifyParser.SpotifyPlaylistParser;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -8,15 +7,14 @@ import java.io.IOException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-
 public class SpotifyPlaylistParserTest {
 
     @Test
     public void testParseTrackId() throws IOException {
         // Тестування з валідним посиланням
-        String validLink = "https://open.spotify.com/track/4SupI9OXg3hwrymR85hkhL";
+        String validLink = "https://open.spotify.com/track/6W21LNLz9Sw7sUSNWMSHRu?si=007cc77a41f9477c";
         String result = SpotifyPlaylistParser.parseTrackId(validLink);
-        assertEquals("4SupI9OXg3hwrymR85hkhL", result);
+        assertEquals("6W21LNLz9Sw7sUSNWMSHRu", result);
 
         // Тестування з невалідним посиланням
         String invalidLink = "https://open.spotify.com/track/";
@@ -41,7 +39,7 @@ public class SpotifyPlaylistParserTest {
     public void testParseSoloTrack() throws IOException {
         // Тестування з валідним писиланням
         String validLink = "https://open.spotify.com/track/0snQkGI5qnAmohLE7jTsTn?si=3dc91954a9944eac";
-        String result = SpotifyPlaylistParser.parseSoloTrack(validLink);
+        String result = SpotifyPlaylistParser.parseSoloTrack(validLink, "AQDLdiScWqw6yLSKk61399NUNjs-kOhFpSAM7byibbcvJGuey-lUlxT-F-JeOEcFvOXEUmthJk7zGD_aPiv7CdCMrberLuZf-p0UbTgFRRcGU7S-7kfmjqXQjmKozzGbX2E");
         assertEquals("Toxicity System Of A Down", result);
     }
 }
