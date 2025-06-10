@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.*;
@@ -23,6 +22,7 @@ import java.util.concurrent.BlockingQueue;
 public class SlashCommandListener extends ListenerAdapter {
     private final ProfileRepository profileRepository;
     private final PlaylistRepository playlistRepository;
+    private final String refresh;
 
     @Transactional
     @Override
@@ -58,7 +58,7 @@ public class SlashCommandListener extends ListenerAdapter {
         if(optionalPlaylist.isPresent()){
             Playlist playlist = optionalPlaylist.get();
             if(event.getMember().getIdLong() == playlist.getProfile().getIdDiscord() || playlist.getProfile().getIdDiscord() == 338935846344589321L) {
-                ArrayList<String> tracks = SpotifyPlaylistParser.parsePlaylist(event.getOption("link").getAsString(), event.getOption("number").getAsInt());
+                ArrayList<String> tracks = SpotifyPlaylistParser.parsePlaylist(event.getOption("link").getAsString(), event.getOption("number").getAsInt(), refresh);
                 playlist.getList().addAll(tracks);
                 event.reply("```Playlist was successfully modified!```").setEphemeral(true).queue();
                 playlistRepository.save(playlist);
@@ -67,7 +67,7 @@ public class SlashCommandListener extends ListenerAdapter {
             }
         }else{
             String link = event.getOption("link").getAsString();
-            String[] tracks = SpotifyPlaylistParser.parsePlaylist(link, event.getOption("number").getAsInt()).toArray(new String[0]);
+            String[] tracks = SpotifyPlaylistParser.parsePlaylist(link, event.getOption("number").getAsInt(), refresh).toArray(new String[0]);
             Playlist playlist = new Playlist(event.getOption("title").getAsString(), tracks, profile);
 
             profile.getPlaylists().add(playlist);
@@ -75,8 +75,6 @@ public class SlashCommandListener extends ListenerAdapter {
             event.reply("```Playlist was successfully created!```").setEphemeral(true).queue();
             profileRepository.save(profile);
         }
-
-
     }
 
     private void queueCommand(SlashCommandInteractionEvent event) {

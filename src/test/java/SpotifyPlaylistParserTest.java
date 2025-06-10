@@ -1,5 +1,4 @@
-package bots.bot.music.SpotifyParser;
-
+import bots.bot.music.SpotifyParser.SpotifyPlaylistParser;
 import org.junit.Test;
 
 import java.io.IOException;

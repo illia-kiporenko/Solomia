@@ -26,6 +26,8 @@ import java.sql.Time;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 public class Play implements ICommand {
@@ -57,12 +59,8 @@ public class Play implements ICommand {
             songs[i] = lines[i].substring(6); // Remove "!play " prefix
         }
         for(String link: songs) {
-            if (!isUrl(link)) {
-                link = "ytsearch:" + String.join(" ", link) + " audio";
-            }
-            if(link.contains("open.spotify")){
-                link = "ytsearch: " + SpotifyPlaylistParser.parseSoloTrack(link) + " audio";
-            }
+            link = prepareLink(link);
+
             System.out.println(event.getMember().getUser().getName() + " " + event.getGuild().getName());
 
             PlayerManager.getInstance().loadAndPlay(event.getChannel().asTextChannel(), link);
@@ -71,6 +69,31 @@ public class Play implements ICommand {
             Thread.sleep(1000);
             setTimer(event.getGuild(),1);
 
+        }
+    }
+
+    private String prepareLink(String link) throws IOException {
+        if(link.contains("youtu")){
+            String regex = "(?:https?://)?(?:www\\.|m\\.)?(?:youtube\\.com/watch\\?v=|youtu\\.be/)([a-zA-Z0-9_-]{11})";
+
+            Pattern pattern = Pattern.compile(regex);
+
+            Matcher matcher = pattern.matcher(link);
+
+            if (matcher.find()) {
+                String videoId = matcher.group(1);
+                return "https://www.youtube.com/watch?v=" + videoId;
+            } else {
+                return null;
+            }
+        }else if(link.contains("open.spotify")){
+            return "ytsearch: " + SpotifyPlaylistParser.parseSoloTrack(link, "AQDLdiScWqw6yLSKk61399NUNjs-kOhFpSAM7byibbcvJGuey-lUlxT-F-JeOEcFvOXEUmthJk7zGD_aPiv7CdCMrberLuZf-p0UbTgFRRcGU7S-7kfmjqXQjmKozzGbX2E") + " audio";
+        }else{
+            if (!isUrl(link)) {
+                return  "ytsearch:" + String.join(" ", link) + " audio";
+            }else{
+                return link;
+            }
         }
     }
 
@@ -111,7 +134,7 @@ public class Play implements ICommand {
                 urlSong.add("ytsearch:" + String.join(" ", link) + " audio");
             } else {
                 if(link.contains("open.spotify")){
-                    link = "ytsearch: " + SpotifyPlaylistParser.parseSoloTrack(link) + " audio";
+                    link = "ytsearch: " + SpotifyPlaylistParser.parseSoloTrack(link, "AQDLdiScWqw6yLSKk61399NUNjs-kOhFpSAM7byibbcvJGuey-lUlxT-F-JeOEcFvOXEUmthJk7zGD_aPiv7CdCMrberLuZf-p0UbTgFRRcGU7S-7kfmjqXQjmKozzGbX2E") + " audio";
                 }
                 urlSong.add(link);
             }

@@ -16,7 +16,5 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
     @Query("SELECT p FROM Profile p JOIN p.playlists pl WHERE pl.name = :playlistName")
     Optional<Profile> findProfileByPlaylistName(String playlistName);
-
-
 }
 

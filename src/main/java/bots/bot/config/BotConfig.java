@@ -1,6 +1,7 @@
 package bots.bot.config;
 
 import bots.bot.coin.ProfileRepository;
+import bots.bot.coin.VoiceListener;
 import bots.bot.commands.SlashCommandListener;
 import bots.bot.music.JDACommands;
 import bots.bot.music.commands.*;
@@ -25,6 +26,9 @@ public class BotConfig {
     @Value("${bot.token}")
     private String botToken;
 
+    @Value("${bot.refresh}")
+    private String refresh;
+
     private static final GatewayIntent[] INTENTS = {
             GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MESSAGES,
             GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_VOICE_STATES,
@@ -32,16 +36,17 @@ public class BotConfig {
     };
 
     @Bean
-    public JDA jda(SlashCommandListener slashCommandListener, JDACommands jdaCommands) throws InterruptedException {
+    public JDA jda(SlashCommandListener slashCommandListener, JDACommands jdaCommands, VoiceListener voiceListener) throws InterruptedException {
         JDA jda = JDABuilder.createDefault(botToken)
                 .setActivity(Activity.watching("checks"))
-                .addEventListeners(slashCommandListener, jdaCommands)
+                .addEventListeners(slashCommandListener, jdaCommands, voiceListener)
                 .enableIntents(Arrays.asList(INTENTS))
                 .build();
 
         jda.awaitReady();
         return jda;
     }
+
 
     @Bean
     public JDACommands jdaCommands() {
@@ -59,7 +64,7 @@ public class BotConfig {
 
     @Bean
     public SlashCommandListener slashCommandListener(ProfileRepository profileRepository, PlaylistRepository playlistRepository) {
-        return new SlashCommandListener(profileRepository, playlistRepository);
+        return new SlashCommandListener(profileRepository, playlistRepository, refresh);
     }
 
     @Bean

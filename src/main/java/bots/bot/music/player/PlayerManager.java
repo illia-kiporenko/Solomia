@@ -9,8 +9,9 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
-import dev.lavalink.youtube.clients.*;
-import dev.lavalink.youtube.clients.skeleton.Client;
+import dev.lavalink.youtube.clients.TvHtml5Embedded;
+import dev.lavalink.youtube.clients.Web;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,10 +20,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+
+@Slf4j
 @Component
 public class PlayerManager {
-    @Value("${plugins.youtube.pot.token}")
-    public static String poTokene;
 
     private static PlayerManager INSTANCE;
     private final Map<Long, GuildMusicManager> musicManagers;
@@ -32,16 +33,16 @@ public class PlayerManager {
 
         this.musicManagers = new HashMap<>();
         this.audioPlayerManager = new DefaultAudioPlayerManager();
+
         YoutubeAudioSourceManager ytms = new YoutubeAudioSourceManager(true, new TvHtml5Embedded());
         String poToken = "MnQsFEzgYOA0hywsyNoDx2aQqcVket0TpfJzJeKXLdQigxYhsiGpcG75oeL7DRljkRsUTXgpd3CjJzwLuraG2096q09bu-bvXqV3a3J-NV-592zaN3iCuhBihPAgNjx4iUbyk8aWtHHWwfBM5Xvm7sF1GKV-LA==";
-        System.out.println(poTokene + " is poToken");
         String visitorData = "Cgt5NzdmVzNBOEdVWSi0m5u6BjIKCgJERRIEEgAgEQ%3D%3D";
-        ytms.useOauth2("1//09SmKa9w4RONOCgYIARAAGAkSNwF-L9IrwkLyiUUsOcyK7C7l4eDf5TRF1I5bQgvew6AWDx1WkIipqu-MPfOydjTjAOSuCbAHOWA", true);
         Web.setPoTokenAndVisitorData(poToken, visitorData);
-        System.out.println(ytms.getOauth2RefreshToken());
+        ytms.useOauth2("1//09SmKa9w4RONOCgYIARAAGAkSNwF-L9IrwkLyiUUsOcyK7C7l4eDf5TRF1I5bQgvew6AWDx1WkIipqu-MPfOydjTjAOSuCbAHOWA", false);
         audioPlayerManager.registerSourceManager(ytms);
         AudioSourceManagers.registerRemoteSources(this.audioPlayerManager);
         AudioSourceManagers.registerLocalSource(this.audioPlayerManager);
+
     }
 
     public GuildMusicManager getMusicManager(Guild guild){
@@ -59,7 +60,7 @@ public class PlayerManager {
             @Override
             public void trackLoaded(AudioTrack audioTrack) {
                 musicManager.scheduler.queue(audioTrack);
-
+                log.info("Loaded track {} by {} in guild {}", audioTrack.getInfo().title, audioTrack.getInfo().author, textChannel.getGuild().getId());
                 textChannel.sendMessage("```Adding to queue " + audioTrack.getInfo().title + " by " + audioTrack.getInfo().author + "```").queue();
             }
 

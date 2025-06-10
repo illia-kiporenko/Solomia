@@ -27,5 +27,4 @@ public class ProfileController {
         return  profileService.getProfile(customerId);
     }
 
-
 }
